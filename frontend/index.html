@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Wishcraft — Birthday Experiences</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="noise"></div>
+
+    <nav>
+        <a class="brand" href="#">✦ wishcraft</a>
+        <span>NOT ANOTHER BIRTHDAY TEXT</span>
+    </nav>
+
+    <main>
+        <section class="landing">
+            <div class="orb"></div>
+
+            <div>
+                <div class="pill">✨ PERSONALIZED BIRTHDAY EXPERIENCES</div>
+
+                <h1>
+                    Make them say<br>
+                    <em>“How did you make this?”</em>
+                </h1>
+
+                <p>
+                    Tell us about your person. We'll turn their story, personality
+                    and inside jokes into an interactive birthday experience
+                    they'll actually remember.
+                </p>
+
+                <button class="primary" onclick="goForm()">
+                    Create an experience →
+                </button>
+
+                <small>✦ Takes about 3 minutes · No design skills needed</small>
+            </div>
+
+            <div class="preview">
+                <div class="window">
+                    <div class="bar">
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                        <b>birthday_experience.exe</b>
+                    </div>
+
+                    <div class="pv">
+                        <label>SPECIAL DELIVERY // 26</label>
+                        <strong>ARUN</strong>
+
+                        <p>
+                            A birthday story built from the details only you know.
+                        </p>
+
+                        <div class="score">
+                            <b>10+</b>
+                            <b>∞</b>
+                            <small>YEARS OF FRIENDSHIP</small>
+                            <small>MEMORIES</small>
+                        </div>
+
+                        <mark>🏏 CRICKET LEGEND</mark>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how">
+            <label>HOW IT WORKS</label>
+
+            <h2>
+                Three minutes.<br>
+                <span>A lifetime of memories.</span>
+            </h2>
+
+            <div class="steps">
+                <article>
+                    <b>01</b>
+                    <h3>Tell us about them</h3>
+                    <p>
+                        Stories, hobbies, personality, your history together —
+                        the little details make the magic.
+                    </p>
+                </article>
+
+                <article>
+                    <b>02</b>
+                    <h3>Pick the vibe</h3>
+                    <p>
+                        Cricket. Mystery. Cinema. Emotional. Or let us surprise you.
+                    </p>
+                </article>
+
+                <article>
+                    <b>03</b>
+                    <h3>Send the link</h3>
+                    <p>
+                        We turn it into a beautiful interactive experience
+                        ready to share.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section class="builder" id="builder">
+            <label>BUILD THEIR EXPERIENCE</label>
+
+            <div class="heading">
+                <h2>
+                    Let's make this<br>
+                    <span>personal.</span>
+                </h2>
+
+                <p>
+                    Don't worry about writing perfectly. Give us raw details —
+                    we'll handle the storytelling.
+                </p>
+            </div>
+
+            <form id="form">
+                <div class="step active" data-step="1">
+                    <h3><em>01</em> Meet the birthday person</h3>
+
+                    <div class="two">
+                        <label>
+                            Name
+                            <input name="name" required placeholder="e.g. Arun">
+                        </label>
+
+                        <label>
+                            Age
+                            <input name="age" type="number" min="1" max="120">
+                        </label>
+                    </div>
+
+                    <div class="two">
+                        <label>
+                            Where do they live?
+                            <input name="location" placeholder="City / Country">
+                        </label>
+
+                        <label>
+                            Gender
+                            <select name="gender">
+                                <option value="">Prefer not to say</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="two">
+                        <label>
+                            How do you know them?
+                            <select name="relationship">
+                                <option>Friend</option>
+                                <option>Best Friend</option>
+                                <option>Brother</option>
+                                <option>Sister</option>
+                                <option>Partner</option>
+                                <option>Parent</option>
+                                <option>Cousin</option>
+                                <option>Colleague</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            How long have you known them?
+                            <input
+                                name="known_since"
+                                placeholder="Since Class 6 / 10 years"
+                            >
+                        </label>
+                    </div>
+
+                    <label>
+                        How did you meet?
+                        <textarea
+                            name="how_met"
+                            placeholder="Tell us the beginning of the story..."
+                        ></textarea>
+                    </label>
+                </div>
+
+                <div class="step" data-step="2">
+                    <h3><em>02</em> What makes them... them?</h3>
+
+                    <label>
+                        Personality
+                        <small>Pick everything that fits</small>
+                    </label>
+
+                    <div class="chips" data-name="personality">
+                        Funny|Introvert|Extrovert|Emotional|Adventurous|Foodie|Gym freak|Always late 😂|Short-tempered|Chill|Bookworm|Chaotic
+                    </div>
+
+                    <label>What do they love?</label>
+
+                    <div class="chips" data-name="interests">
+                        🏏 Cricket|⚽ Football|🎮 Gaming|🎬 Movies|🎵 Music|✈️ Travel|🚗 Cars|🏍️ Bikes|💻 Coding|📚 Books|🏋️ Gym|📸 Photography
+                    </div>
+
+                    <div class="two">
+                        <label>
+                            Favorite person / celebrity
+                            <input
+                                name="favorite_person"
+                                placeholder="e.g. Virat Kohli"
+                            >
+                        </label>
+
+                        <label>
+                            Favorite movie genre
+                            <input
+                                name="favorite_movie_genre"
+                                placeholder="e.g. Suspense thriller"
+                            >
+                        </label>
+                    </div>
+                </div>
+
+                <div class="step" data-step="3">
+                    <h3><em>03</em> Give us the good stuff.</h3>
+
+                    <label>
+                        What's memorable about them?
+                        <textarea
+                            name="memorable_story"
+                            placeholder="A trip, school memory, funny incident..."
+                        ></textarea>
+                    </label>
+
+                    <label>
+                        What's funny about them?
+                        <textarea
+                            name="funny_fact"
+                            placeholder="The roast material. Mostly. 😄"
+                        ></textarea>
+                    </label>
+
+                    <label>
+                        What are you proud of about them?
+                        <textarea
+                            name="achievement"
+                            placeholder="Career win, personal achievement, something they've overcome..."
+                        ></textarea>
+                    </label>
+
+                    <label>
+                        What would you like to tell them?
+                        <textarea
+                            name="birthday_message"
+                            placeholder="Write it in your own words — we'll preserve the feeling."
+                        ></textarea>
+                    </label>
+
+                    <label>
+                        Anything else?
+                        <textarea
+                            name="private_note"
+                            placeholder="Optional context. Please don't include sensitive information."
+                        ></textarea>
+                    </label>
+                </div>
+
+                <div class="step" data-step="4">
+                    <h3><em>04</em> Choose the vibe.</h3>
+
+                    <div class="themes">
+                        Cricket Legend|Classified Mystery|Movie Trailer|Game Mode|Heartfelt|Surprise Me
+                    </div>
+
+                    <label>How crazy should we make it?</label>
+
+                    <div class="levels">
+                        Simple|Creative|Crazy 🔥|Absolutely Insane 🤯
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <button type="button" class="secondary" id="back">
+                        ← Back
+                    </button>
+
+                    <div>
+                        <span id="count">1 / 4</span>
+                        <i><b id="bar"></b></i>
+                    </div>
+
+                    <button type="button" class="primary" id="next">
+                        Continue →
+                    </button>
+                </div>
+            </form>
+
+            <div id="generating">
+                <div>✦</div>
+
+                <label>YOUR EXPERIENCE IS BEING BUILT</label>
+
+                <h2>
+                    Turning little details<br>
+                    into <em>big memories.</em>
+                </h2>
+
+                <p>
+                    Reading their story ✓<br>
+                    Finding the perfect vibe ✓<br>
+                    Building the birthday narrative ✓<br>
+                    Adding the final touch ✓
+                </p>
+            </div>
+
+            <div id="result">
+                <label>✦ EXPERIENCE READY</label>
+
+                <h2>
+                    It's ready.<br>
+                    <span>Send the surprise.</span>
+                </h2>
+
+                <p>
+                    Your personalized birthday experience has been generated.
+                </p>
+
+                <button class="primary" id="open">
+                    Open Birthday Experience →
+                </button>
+
+                <button class="secondary" onclick="location.reload()">
+                    Create another
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        ✦ wishcraft
+        <span>
+            Made for people who are tired of boring birthday messages.
+        </span>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
