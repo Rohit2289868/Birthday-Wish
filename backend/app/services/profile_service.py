@@ -2,6 +2,7 @@ from app.models.schemas import BirthdayProfile
 
 
 VALID_THEMES = {
+    "iconic_call",
     "cricket",
     "mystery",
     "cinema",
@@ -9,6 +10,7 @@ VALID_THEMES = {
     "emotional",
     "surprise",
 }
+
 
 VALID_INTENSITIES = {
     "simple",
@@ -18,41 +20,35 @@ VALID_INTENSITIES = {
 }
 
 
-def clean_list(values: list[str]) -> list[str]:
-    """
-    Clean strings and remove duplicates
-    while preserving order.
-    """
+def normalize_profile(p: BirthdayProfile) -> BirthdayProfile:
 
-    return list(
+    p.name = p.name.strip()
+
+    p.relationship = p.relationship.strip()
+
+    p.personality = list(
         dict.fromkeys(
-            value.strip()
-            for value in values
-            if value and value.strip()
+            x.strip()
+            for x in p.personality
+            if x.strip()
         )
     )
 
-
-def normalize_profile(
-    profile: BirthdayProfile,
-) -> BirthdayProfile:
-
-    profile.name = profile.name.strip()
-
-    profile.relationship = profile.relationship.strip()
-
-    profile.personality = clean_list(
-        profile.personality
+    p.interests = list(
+        dict.fromkeys(
+            x.strip()
+            for x in p.interests
+            if x.strip()
+        )
     )
 
-    profile.interests = clean_list(
-        profile.interests
-    )
+    if p.theme not in VALID_THEMES:
+        p.theme = "iconic_call"
 
-    if profile.theme not in VALID_THEMES:
-        profile.theme = "surprise"
+    if p.intensity not in VALID_INTENSITIES:
+        p.intensity = "crazy"
 
-    if profile.intensity not in VALID_INTENSITIES:
-        profile.intensity = "crazy"
+    if p.favorite_person:
+        p.favorite_person = p.favorite_person.strip()
 
-    return profile
+    return p

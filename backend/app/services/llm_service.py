@@ -1,336 +1,170 @@
-from uuid import uuid4
+import json
+import os
 
-from app.models.schemas import BirthdayProfile
+from dotenv import load_dotenv
+from google import genai
 
-from app.models.experience import (
+from app.models.schemas import (
+    BirthdayProfile,
     ExperiencePlan,
-    ExperienceMeta,
-    HeroSection,
-    TimelineSection,
-    TimelineItem,
-    StatsSection,
-    Stat,
-    TextSection,
-    SurpriseSection,
-    Theme,
 )
 
 
-def pick_theme(
+load_dotenv()
+
+
+GEMINI_API_KEY = os.getenv(
+    "GEMINI_API_KEY"
+)
+
+GEMINI_MODEL = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-2.5-flash"
+)
+
+
+if not GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY is not configured."
+    )
+
+
+client = genai.Client(
+    api_key=GEMINI_API_KEY
+)
+
+
+SYSTEM_INSTRUCTION = """
+You are the creative AI engine behind a
+premium personalized birthday experience.
+
+Your job is NOT to generate HTML.
+
+Your job is to transform the birthday
+recipient's information into a structured
+ExperiencePlan.
+
+The ExperiencePlan will later be rendered
+into HTML by our application.
+
+Rules:
+
+1. Never invent personal facts.
+2. Only use information provided by the user.
+3. You may creatively phrase provided facts.
+4. The tone should feel personal, funny,
+   playful and emotionally warm.
+5. Avoid generic birthday wishes.
+6. Create memorable storytelling.
+7. Use the recipient's interests naturally.
+8. Keep the experience entertaining.
+9. Do not claim that a real celebrity has
+   endorsed, called, or personally contacted
+   the recipient.
+10. If the user mentions a celebrity, treat
+    that as a fan-theme or fictional tribute,
+    not a real endorsement.
+11. Return ONLY valid JSON.
+12. The JSON must match the requested schema.
+"""
+
+
+def build_prompt(
     profile: BirthdayProfile,
-) -> Theme:
+) -> str:
 
-    if profile.theme != "surprise":
+    profile_data = profile.model_dump(
+        exclude_none=True
+    )
 
-        return Theme(profile.theme)
+    return f"""
+Create a personalized birthday experience
+for the following person.
 
-    interests = " ".join(
-        profile.interests
-    ).lower()
+PERSON INFORMATION:
 
-    if "cricket" in interests:
+{json.dumps(
+    profile_data,
+    indent=2,
+    ensure_ascii=False
+)}
 
-        return Theme.CRICKET
+Create content that feels like it was written
+by a close friend who knows this person.
 
-    if "movie" in interests:
+The experience should have:
 
-        return Theme.CINEMA
+- A strong hero section
+- A friendship timeline
+- Interesting statistics
+- A funny but friendly roast
+- A surprise/reveal section
+- A memorable final birthday message
 
-    if "gaming" in interests:
+Use the person's hobbies, education,
+career, friendship history and personality
+where available.
 
-        return Theme.GAMING
+Do not invent missing information.
 
-    return Theme.CELEBRATION
+Return ONLY JSON matching the
+ExperiencePlan schema.
+"""
 
 
 def generate_experience_plan(
     profile: BirthdayProfile,
 ) -> ExperiencePlan:
 
-    """
-    Temporary creative engine.
+    prompt = build_prompt(profile)
 
-    Later this function will call the LLM.
+    response = client.models.generate_content(
+        model=GEMINI_MODEL,
 
-    The important part is that the LLM will return
-    an ExperiencePlan instead of raw HTML.
-    """
+        contents=prompt,
 
-    theme = pick_theme(profile)
+        config={
+            "system_instruction":
+                SYSTEM_INSTRUCTION,
 
-    name = profile.name
+            "response_mime_type":
+                "application/json",
 
-    personality = (
-        ", ".join(profile.personality[:3])
-        if profile.personality
-        else "one-of-a-kind"
+            "response_schema":
+                ExperiencePlan,
+        },
     )
 
-    interest = (
-        profile.interests[0]
-        if profile.interests
-        else "good times"
-    )
 
-    # -----------------------------------------------------
-    # HERO
-    # -----------------------------------------------------
+    if not response.text:
 
-    if theme == Theme.CRICKET:
-
-        hero = HeroSection(
-            eyebrow="SPECIAL DELIVERY // BIRTHDAY MATCH",
-            title=name.upper(),
-            subtitle=(
-                f"{personality.title()} • "
-                f"{interest.title()} • "
-                "Main-character energy"
-            ),
-            badge="🏏 CRICKET LEGEND",
-            cta={
-                "label": "START THE EXPERIENCE",
-                "action": "scroll",
-            },
+        raise RuntimeError(
+            "Gemini returned an empty response."
         )
 
-        roast = TextSection(
-            type="roast",
-            eyebrow="OFFICIAL SCOUTING REPORT",
-            title="The birthday roast.",
-            body=(
-                profile.funny_fact
-                or (
-                    f"Scouting report: {name} "
-                    f"takes {interest} way too seriously."
-                )
-            ),
-            icon="🏏",
+
+    try:
+
+        data = json.loads(
+            response.text
         )
 
-        surprise = SurpriseSection(
-            title="📞 THE CALL-UP",
-            body=(
-                f"Incoming birthday protocol for "
-                f"{name}. Answer the call and "
-                "unlock the surprise."
-            ),
-            interaction="reveal",
+    except json.JSONDecodeError as exc:
+
+        raise RuntimeError(
+            "Gemini returned invalid JSON."
+        ) from exc
+
+
+    try:
+
+        return ExperiencePlan.model_validate(
+            data
         )
 
-    elif theme == Theme.MYSTERY:
+    except Exception as exc:
 
-        hero = HeroSection(
-            eyebrow="CLASSIFIED // BIRTHDAY CASE",
-            title=f"CASE: {name.upper()}",
-            subtitle=(
-                "A suspiciously good birthday "
-                "has been detected."
-            ),
-            badge="🕵️ CASE FILE",
-            cta={
-                "label": "OPEN CASE",
-                "action": "scroll",
-            },
-        )
-
-        roast = TextSection(
-            type="roast",
-            eyebrow="DETECTIVE'S NOTE",
-            title="The suspect profile.",
-            body=(
-                profile.funny_fact
-                or (
-                    f"{name} has been caught "
-                    f"being {personality}."
-                )
-            ),
-            icon="🕵️",
-        )
-
-        surprise = SurpriseSection(
-            title="🔐 THE FINAL CLUE",
-            body=(
-                "One last classified file "
-                "contains the message they "
-                "were never expecting."
-            ),
-            interaction="reveal",
-        )
-
-    else:
-
-        hero = HeroSection(
-            eyebrow="A SPECIAL PRODUCTION // TODAY",
-            title=name.upper(),
-            subtitle=(
-                "One person. One story. "
-                "One unforgettable birthday."
-            ),
-            badge="✨ PERSONALIZED EXPERIENCE",
-            cta={
-                "label": "BEGIN",
-                "action": "scroll",
-            },
-        )
-
-        roast = TextSection(
-            type="roast",
-            eyebrow="OFFICIAL REPORT",
-            title="Things we love about them.",
-            body=(
-                profile.funny_fact
-                or (
-                    f"Official diagnosis: "
-                    f"{name} is {personality}."
-                )
-            ),
-            icon="✨",
-        )
-
-        surprise = SurpriseSection(
-            title="✨ THE SURPRISE",
-            body=(
-                f"The birthday experience "
-                f"is ready for {name}."
-            ),
-            interaction="reveal",
-        )
-
-    # -----------------------------------------------------
-    # TIMELINE
-    # -----------------------------------------------------
-
-    timeline = TimelineSection(
-        title="Every friendship has chapters.",
-        subtitle="The story so far.",
-        items=[
-            TimelineItem(
-                label="01",
-                title="HOW IT STARTED",
-                description=(
-                    profile.how_met
-                    or (
-                        "That is where the "
-                        f"{profile.relationship.lower()} "
-                        "story began."
-                    )
-                ),
-                icon="✦",
-            ),
-
-            TimelineItem(
-                label="02",
-                title="THE MEMORIES",
-                description=(
-                    profile.memorable_story
-                    or (
-                        "A collection of moments "
-                        "that became stories worth "
-                        "remembering."
-                    )
-                ),
-                icon="◌",
-            ),
-
-            TimelineItem(
-                label="03",
-                title="THE JOURNEY",
-                description=(
-                    profile.achievement
-                    or (
-                        "Another year, another "
-                        "chapter, another reason "
-                        "to celebrate."
-                    )
-                ),
-                icon="↗",
-            ),
-        ],
-    )
-
-    # -----------------------------------------------------
-    # STATS
-    # -----------------------------------------------------
-
-    stats = StatsSection(
-        title="THE NUMBERS",
-        stats=[
-            Stat(
-                value=profile.known_since or "∞",
-                label="TIME TOGETHER",
-            ),
-
-            Stat(
-                value=str(
-                    len(profile.interests)
-                ),
-                label="OBSESSIONS",
-            ),
-
-            Stat(
-                value="1",
-                label="BIRTHDAY LEGEND",
-            ),
-        ],
-    )
-
-    # -----------------------------------------------------
-    # FINAL MESSAGE
-    # -----------------------------------------------------
-
-    final_message = TextSection(
-        type="final",
-        eyebrow="FINAL MESSAGE",
-        title=f"HAPPY BIRTHDAY, {name}.",
-        body=(
-            profile.birthday_message
-            or (
-                f"Happy Birthday, {name}! "
-                "Keep being exactly the kind "
-                "of person people are lucky to "
-                "have in their lives. Here's to "
-                "bigger dreams, louder laughs "
-                "and an incredible year ahead."
-            )
-        ),
-    )
-
-    # -----------------------------------------------------
-    # EXPERIENCE PLAN
-    # -----------------------------------------------------
-
-    plan = ExperiencePlan(
-
-        meta=ExperienceMeta(
-            experience_id=str(uuid4()),
-            recipient_name=name,
-            theme=theme,
-            tone="funny-playful",
-            intensity=profile.intensity,
-        ),
-
-        hero=hero,
-
-        sections=[
-            timeline.model_dump(),
-            stats.model_dump(),
-            roast.model_dump(),
-            surprise.model_dump(),
-        ],
-
-        final_message=final_message,
-
-        safety_notes=[
-            (
-                "Do not invent private facts "
-                "not supplied by the creator."
-            ),
-            (
-                "Do not impersonate a real person "
-                "or claim a real celebrity endorsed "
-                "the experience."
-            ),
-        ],
-    )
-
-    return plan
+        raise RuntimeError(
+            "Gemini response does not match "
+            "ExperiencePlan schema."
+        ) from exc

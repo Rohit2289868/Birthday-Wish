@@ -1,9 +1,13 @@
 const API = 'http://127.0.0.1:8000';
 
 let step = 1,
-    theme = 'surprise',
+    theme = 'iconic_call',
     intensity = 'crazy',
     html = '';
+
+let experienceId = null;
+let previewUrl = null;
+let downloadUrl = null;
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -27,28 +31,91 @@ $$('.chips button').forEach(b => {
     b.onclick = () => b.classList.toggle('selected');
 });
 
-$('.themes').innerHTML = 'Cricket Legend|Classified Mystery|Movie Trailer|Game Mode|Heartfelt|Surprise Me'
-    .split('|')
-    .map((x, i) =>
-        `<button type="button" data-v="${[
-            'cricket',
-            'mystery',
-            'cinema',
-            'gaming',
-            'emotional',
-            'surprise'
-        ][i]}" class="${i === 5 ? 'selected' : ''}">
-            ${['🏏', '🕵️', '🎬', '🎮', '❤️', '✨'][i]} ${x}
-        </button>`
-    )
+const THEMES = [
+    {
+        value: 'iconic_call',
+        icon: '📞',
+        title: 'The Call',
+        description: 'A surprise call from someone they admire',
+        featured: true
+    },
+    {
+        value: 'cricket',
+        icon: '🏏',
+        title: 'Cricket Legend',
+        description: 'Stadium energy, stats and birthday banter'
+    },
+    {
+        value: 'mystery',
+        icon: '🕵️',
+        title: 'Classified Mystery',
+        description: 'A suspense thriller birthday story'
+    },
+    {
+        value: 'cinema',
+        icon: '🎬',
+        title: 'Movie Trailer',
+        description: 'Their life becomes the next blockbuster'
+    },
+    {
+        value: 'gaming',
+        icon: '🎮',
+        title: 'Game Mode',
+        description: 'Levels, achievements and boss fights'
+    },
+    {
+        value: 'emotional',
+        icon: '❤️',
+        title: 'Heartfelt',
+        description: 'A beautiful friendship story'
+    },
+    {
+        value: 'surprise',
+        icon: '✨',
+        title: 'Surprise Me',
+        description: 'Let AI choose the experience'
+    }
+];
+
+
+$('.themes').innerHTML = THEMES
+    .map((t, i) => `
+        <button
+            type="button"
+            data-v="${t.value}"
+            class="${i === 0 ? 'selected featured-theme' : ''}"
+        >
+            <span class="theme-icon">${t.icon}</span>
+
+            <strong>${t.title}</strong>
+
+            <small>${t.description}</small>
+
+            ${
+                t.featured
+                    ? '<b class="theme-badge">SIGNATURE</b>'
+                    : ''
+            }
+        </button>
+    `)
     .join('');
 
+
 $$('.themes button').forEach(b => {
+
     b.onclick = () => {
-        $$('.themes button').forEach(x => x.classList.remove('selected'));
+
+        $$('.themes button')
+            .forEach(x =>
+                x.classList.remove('selected')
+            );
+
         b.classList.add('selected');
+
         theme = b.dataset.v;
+
     };
+
 });
 
 $('.levels').innerHTML = 'Simple|Creative|Crazy 🔥|Absolutely Insane 🤯'
@@ -119,74 +186,76 @@ function data() {
 }
 
 async function generate() {
-    let p = data();
+
+    const p = data();
 
     if (!p.name) {
-        alert('Please enter their name.');
+
+        alert(
+            'Please enter their name.'
+        );
+
         return;
     }
 
+
     $('#form').style.display = 'none';
+
     $('.heading').style.display = 'none';
-    $('.builder>label').style.display = 'none';
-    $('#generating').classList.add('active');
+
+    $('.builder>label').style.display =
+        'none';
+
+    $('#generating')
+        .classList
+        .add('active');
+
 
     try {
 
-        console.log('Sending birthday profile:', p);
-
-        const r = await fetch(
+        const response = await fetch(
             API + '/api/birthday/generate',
             {
                 method: 'POST',
 
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type':
+                        'application/json'
                 },
 
                 body: JSON.stringify(p)
             }
         );
 
-        console.log(
-            'Backend response:',
-            r.status,
-            r.statusText
-        );
 
+        if (!response.ok) {
 
-        /*
-         * IMPORTANT:
-         * Don't hide backend errors.
-         */
+            const error =
+                await response.text();
 
-        if (!r.ok) {
-
-            const errorText =
-                await r.text();
-
-            console.error(
-                'Backend error:',
-                errorText
-            );
-
-            throw new Error(
-                `Backend returned ${r.status}\n\n${errorText}`
-            );
+            throw new Error(error);
         }
 
 
+        const result =
+            await response.json();
+
+
+        experienceId =
+            result.experience_id;
+
+
+        previewUrl =
+            API + result.preview_url;
+
+
+        downloadUrl =
+            API + result.download_url;
+
+
         /*
-         * Backend successfully generated
-         * the birthday HTML.
+         * Show result screen.
          */
-
-        html = await r.text();
-
-        console.log(
-            'Birthday experience generated successfully.'
-        );
-
 
         setTimeout(() => {
 
@@ -204,24 +273,27 @@ async function generate() {
     } catch (error) {
 
         console.error(
-            'Birthday generation failed:',
+            'Generation failed:',
             error
         );
 
 
         $('#form').style.display = '';
+
         $('.heading').style.display = '';
 
+        $('.builder>label').style.display =
+            '';
 
-        /*
-         * Show the ACTUAL problem.
-         */
+
+        $('#generating')
+            .classList
+            .remove('active');
+
 
         alert(
-            'Birthday generation failed.\n\n' +
-            error.message
+            'Something went wrong while creating the experience.'
         );
-
     }
 }
 
@@ -233,12 +305,102 @@ $('#next').onclick = () =>
 $('#back').onclick = () =>
     step > 1 && show(step - 1);
 
-$('#open').onclick = () =>
+$('#open').onclick = () => {
+
+    if (!previewUrl) {
+        return;
+    }
+
     window.open(
-        URL.createObjectURL(
-            new Blob([html], { type: 'text/html' })
-        ),
+        previewUrl,
         '_blank'
     );
+
+};
+
+$('#download').onclick = () => {
+
+    if (!downloadUrl) {
+        return;
+    }
+
+    const link =
+        document.createElement('a');
+
+    link.href = downloadUrl;
+
+    link.download = '';
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+};
+
+$('#copyLink').onclick =
+    async () => {
+
+        if (!previewUrl) {
+            return;
+        }
+
+
+        /*
+         * This is the URL that users can
+         * send to their friends.
+         */
+
+        await navigator.clipboard.writeText(
+            previewUrl
+        );
+
+
+        const button =
+            $('#copyLink');
+
+        const original =
+            button.textContent;
+
+
+        button.textContent =
+            '✓ Link Copied!';
+
+
+        setTimeout(() => {
+
+            button.textContent =
+                original;
+
+        }, 1800);
+
+    };
+
+$('#whatsapp').onclick = () => {
+
+    if (!previewUrl) {
+        return;
+    }
+
+
+    const message =
+        encodeURIComponent(
+            '🎉 I made a special birthday experience for you! Open this 👇\n\n'
+            + previewUrl
+        );
+
+
+    const whatsappUrl =
+        'https://wa.me/?text='
+        + message;
+
+
+    window.open(
+        whatsappUrl,
+        '_blank'
+    );
+
+};
 
 show(1);

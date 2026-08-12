@@ -555,3 +555,147 @@ footer {
         line-height: 2.2;
     }
 }
+
+/* =========================================================
+   RESULT ACTIONS
+========================================================= */
+
+.result-actions {
+
+    width: min(
+        620px,
+        100%
+    );
+
+    margin: 30px auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+}
+
+
+.result-actions button {
+
+    min-height: 58px;
+
+    font-size: 14px;
+
+}
+
+
+/* WhatsApp */
+
+.whatsapp {
+
+    border: 1px solid
+        rgba(37, 211, 102, .35);
+
+    background:
+        rgba(37, 211, 102, .08);
+
+    color: #65df8b;
+
+    border-radius: 12px;
+
+    padding: 15px 20px;
+
+    cursor: pointer;
+
+    font:
+        700 13px
+        'DM Sans';
+
+    transition:
+        .2s ease;
+}
+
+
+.whatsapp:hover {
+
+    background:
+        rgba(37, 211, 102, .16);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* Keep forever message */
+
+.keep-note {
+
+    width: min(
+        620px,
+        100%
+    );
+
+    margin: 25px auto;
+
+    padding: 18px;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            209,
+            92,
+            .18
+        );
+
+    border-radius: 14px;
+
+    background:
+        rgba(
+            255,
+            209,
+            92,
+            .04
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    text-align: left;
+}
+
+
+.keep-note strong {
+
+    color: #ffd15c;
+
+    font-size: 13px;
+}
+
+
+.keep-note span {
+
+    color: #858a95;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+.create-again {
+
+    margin-top: 10px;
+}
+
+
+@media (max-width: 600px) {
+
+    .result-actions {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}

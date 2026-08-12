@@ -215,10 +215,14 @@
 
                     <div class="two">
                         <label>
-                            Favorite person / celebrity
+                            Favorite person
+                            <small>
+                                Who would make this birthday unforgettable?
+                            </small>
+                        
                             <input
                                 name="favorite_person"
-                                placeholder="e.g. Virat Kohli"
+                                placeholder="e.g. Virat Kohli, MS Dhoni, a movie star..."
                             >
                         </label>
 
@@ -325,25 +329,96 @@
             </div>
 
             <div id="result">
-                <label>✦ EXPERIENCE READY</label>
 
-                <h2>
-                    It's ready.<br>
-                    <span>Send the surprise.</span>
-                </h2>
-
-                <p>
-                    Your personalized birthday experience has been generated.
-                </p>
-
-                <button class="primary" id="open">
-                    Open Birthday Experience →
+            <label>
+                ✦ EXPERIENCE READY
+            </label>
+        
+        
+            <h2>
+                It's ready.<br>
+                <span>Send the surprise.</span>
+            </h2>
+        
+        
+            <p>
+                The birthday experience has been created.
+                Now choose how you want to deliver it.
+            </p>
+        
+        
+            <div class="result-actions">
+            
+            
+                <!-- PREVIEW -->
+            
+                <button
+                    class="primary"
+                    id="open"
+                    type="button"
+                >
+                    👁 Preview Experience
                 </button>
-
-                <button class="secondary" onclick="location.reload()">
-                    Create another
+            
+            
+                <!-- DOWNLOAD -->
+            
+                <button
+                    class="secondary"
+                    id="download"
+                    type="button"
+                >
+                    ⬇ Download HTML
                 </button>
+            
+            
+                <!-- SHARE LINK -->
+            
+                <button
+                    class="secondary"
+                    id="copyLink"
+                    type="button"
+                >
+                    🔗 Copy Share Link
+                </button>
+            
+            
+                <!-- WHATSAPP -->
+            
+                <button
+                    class="whatsapp"
+                    id="whatsapp"
+                    type="button"
+                >
+                    💚 Share on WhatsApp
+                </button>
+            
+            
             </div>
+
+
+    <div class="keep-note">
+
+        <strong>
+            ⬇ Keep it forever
+        </strong>
+
+        <span>
+            Download the HTML file and keep the
+            complete birthday experience on your device.
+        </span>
+
+    </div>
+
+
+    <button
+        class="secondary create-again"
+        onclick="location.reload()"
+    >
+        Create another
+    </button>
+
+</div>
         </section>
     </main>
 
